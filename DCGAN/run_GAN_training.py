@@ -64,6 +64,7 @@ class RUN_DCGAN(object):
                 if (i+1)%save_interval==0:
                     self.plot_images(save2file=True, samples=noise_input.shape[0],\
                         noise=noise_input, step=(i+1))
+                    
 
     def plot_images(self, save2file=False, fake=True, samples=16, noise=None, step=0):
         filename = 'mnist.png'
