@@ -13,19 +13,27 @@ import matplotlib.pyplot as plt
 
 import sys
 sys.path.append("../")
+import os
 from DCGAN.GAN import DCGAN
+from cv2 import cv2
 
 
 class RUN_DCGAN(object):
-    def __init__(self):
-        self.img_rows = 28
-        self.img_cols = 28
+    def __init__(self, file_folder="mnist", img_rows=28, img_cols=28):
+        self.img_rows = img_rows
+        self.img_cols = img_cols
         self.channel = 1
 
-        self.x_train = input_data.read_data_sets("mnist",\
-            one_hot=True).train.images
-        self.x_train = self.x_train.reshape(-1, self.img_rows,\
-            self.img_cols, 1).astype(np.float32)
+        if file_folder=="mnist":
+            self.x_train = input_data.read_data_sets("mnist",one_hot=True).train.images
+            self.x_train = self.x_train.reshape(-1, self.img_rows,self.img_cols, 1).astype(np.float32)
+
+        else:
+            self.x_train=[]
+            print("Loading images from the folder: "+str(file_folder))
+            for i in os.listdir(str(file_folder)):
+                self.x_train.append(cv2.resize(cv2.imread(str(file_folder)+i), (self.img_rows, self.img_cols)))
+            self.x_train = np.array(self.x_train).reshape(-1, self.img_rows,self.img_cols, 1).astype(np.float32)
 
         self.DCGAN = DCGAN()
         self.discriminator =  self.DCGAN.discriminator_model()
