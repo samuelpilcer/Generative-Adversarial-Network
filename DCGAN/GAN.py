@@ -114,3 +114,24 @@ class DCGAN(object):
         self.AM.compile(loss='binary_crossentropy', optimizer=optimizer,\
             metrics=['accuracy'])
         return self.AM
+
+    def load_discriminator_model(self, file):
+        if self.DM:
+            return self.DM
+        optimizer = RMSprop(lr=0.0002, decay=6e-8)
+        self.DM = Sequential()
+        self.DM.add(self.discriminator())
+        self.DM.load_weights(file)
+        self.DM.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['accuracy'])
+        return self.DM
+
+    def load_adversarial_model(self):
+        if self.AM:
+            return self.AM
+        optimizer = RMSprop(lr=0.0001, decay=3e-8)
+        self.AM = Sequential()
+        self.AM.add(self.generator())
+        self.AM.add(self.discriminator())
+        self.AM.load_weights(file)
+        self.AM.compile(loss='binary_crossentropy', optimizer=optimizer,metrics=['accuracy'])
+        return self.AM
