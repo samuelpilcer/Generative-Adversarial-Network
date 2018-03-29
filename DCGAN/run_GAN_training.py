@@ -11,10 +11,12 @@ from keras.optimizers import Adam, RMSprop
 
 import matplotlib.pyplot as plt
 
-from GAN import DCGAN
+import sys
+sys.path.append("../")
+from DCGAN.GAN import DCGAN
 
 
-class MNIST_DCGAN(object):
+class RUN_DCGAN(object):
     def __init__(self):
         self.img_rows = 28
         self.img_cols = 28
@@ -82,9 +84,7 @@ class MNIST_DCGAN(object):
             plt.show()
 
 if __name__=="__main__":
-    mnist_dcgan = MNIST_DCGAN()
-    timer = ElapsedTimer()
+    mnist_dcgan = RUN_DCGAN()
     mnist_dcgan.train(train_steps=1000, batch_size=256, save_interval=500)
-    timer.elapsed_time()
     mnist_dcgan.plot_images(fake=True)
     mnist_dcgan.plot_images(fake=False, save2file=True)
