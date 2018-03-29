@@ -115,6 +115,44 @@ class DCGAN(object):
             metrics=['accuracy'])
         return self.AM
 
+    def load_generator(self, file):
+        if self.G:
+            return self.G
+        self.G = Sequential()
+        dropout = 0.4
+        depth = 64+64+64+64
+        dim = 7
+        # In: 100
+        # Out: dim x dim x depth
+        self.G.add(Dense(dim*dim*depth, input_dim=100))
+        self.G.add(BatchNormalization(momentum=0.9))
+        self.G.add(Activation('relu'))
+        self.G.add(Reshape((dim, dim, depth)))
+        self.G.add(Dropout(dropout))
+
+        # In: dim x dim x depth
+        # Out: 2*dim x 2*dim x depth/2
+        self.G.add(UpSampling2D())
+        self.G.add(Conv2DTranspose(int(depth/2), 5, padding='same'))
+        self.G.add(BatchNormalization(momentum=0.9))
+        self.G.add(Activation('relu'))
+
+        self.G.add(UpSampling2D())
+        self.G.add(Conv2DTranspose(int(depth/4), 5, padding='same'))
+        self.G.add(BatchNormalization(momentum=0.9))
+        self.G.add(Activation('relu'))
+
+        self.G.add(Conv2DTranspose(int(depth/8), 5, padding='same'))
+        self.G.add(BatchNormalization(momentum=0.9))
+        self.G.add(Activation('relu'))
+
+        # Out: 28 x 28 x 1 grayscale image [0.0,1.0] per pix
+        self.G.add(Conv2DTranspose(1, 5, padding='same'))
+        self.G.add(Activation('sigmoid'))
+        self.G.summary()
+        self.G.load_weights(file)
+        return self.G
+
     def load_discriminator_model(self, file):
         if self.DM:
             return self.DM
@@ -125,7 +163,7 @@ class DCGAN(object):
         self.DM.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['accuracy'])
         return self.DM
 
-    def load_adversarial_model(self):
+    def load_adversarial_model(self, file):
         if self.AM:
             return self.AM
         optimizer = RMSprop(lr=0.0001, decay=3e-8)
