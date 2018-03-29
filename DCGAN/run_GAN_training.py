@@ -73,12 +73,12 @@ class RUN_DCGAN(object):
         self.generator.save_weights(save_model_folder+"/model_gen_"+str(id)+".h5")
 
     def plot_images(self, save2file=False, fake=True, samples=16, noise=None, step=0, save_folder=""):
-        filename = 'mnist.png'
+        filename = save_folder+'img.png'
         if fake:
             if noise is None:
                 noise = np.random.uniform(-1.0, 1.0, size=[samples, 100])
             else:
-                filename = "mnist_%d.png" % step
+                filename = save_folder+"fake_%d.png" % step
             images = self.generator.predict(noise)
         else:
             i = np.random.randint(0, self.x_train.shape[0], samples)
